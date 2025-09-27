@@ -80,6 +80,9 @@ dependencies {
     //ui
     implementation(libs.paging)
     implementation(libs.paging.compose)
+    implementation(libs.coil)
+    implementation(libs.coil.network)
+    implementation(libs.icons)
 
     //test
     testImplementation(libs.junit)

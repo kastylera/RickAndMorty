@@ -13,8 +13,8 @@ class DefaultListComponent(
     private val itemClicked: (item: CharacterData) -> Unit,
 ) : ListComponent, ComponentContext by componentContext {
 
-    private val instance: CharacterInstance =
-        instanceKeeper.getOrCreate { CharacterInstance(getCharactersUseCase) }
+    private val instance: ListInstance =
+        instanceKeeper.getOrCreate { ListInstance(getCharactersUseCase) }
 
     override val characters: StateFlow<PagingData<CharacterData>>
         get() = instance.characters
