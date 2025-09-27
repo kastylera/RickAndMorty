@@ -43,9 +43,6 @@ compose-navigation = { group = "androidx.navigation", name = "navigation-compose
 #DI
 kodein = { group = "org.kodein.di", name = "kodein-di", version.ref = "kodein"}
 kodein-android = { group = "org.kodein.di", name = "kodein-di-framework-android-x", version.ref = "kodein"}
-dagger-hilt = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
-dagger-hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt" }
-
 #REST
 retrofit2 = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
 retrofit2-converter-gson = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "retrofit" }

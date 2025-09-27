@@ -22,7 +22,7 @@ fun ListContent(
     component: ListComponent,
     modifier: Modifier = Modifier,
 ) {
-    val state = component.model.collectAsLazyPagingItems()
+    val state = component.characters.collectAsLazyPagingItems()
 
     Scaffold(
         modifier = modifier,
