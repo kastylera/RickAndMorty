@@ -20,20 +20,13 @@ sealed class ResultWrapper<out R> {
                 is NetworkException.InternetConnectionException -> NO_INTERNET_ERROR_MESSAGE
                 is NetworkException.ServerException -> SERVER_ERROR_MESSAGE
                 is NetworkException.AppHttpException ->
-                    if (!exception.message.isNullOrBlank()) exception.message.orEmpty() else DEFAULT_LOCAL_ERROR_MESSAGE
+                    if (!exception.message.isNullOrBlank()) exception.message else DEFAULT_LOCAL_ERROR_MESSAGE
 
                 is CancellationException -> EMPTY_STRING
 
                 else -> DEFAULT_LOCAL_ERROR_MESSAGE
             }
     }
-}
-
-val ResultWrapper<*>.succeeded
-    get() = this is ResultWrapper.Success && data != null
-
-fun <T> ResultWrapper<T>.successOr(fallback: T): T {
-    return (this as? ResultWrapper.Success<T>)?.data ?: fallback
 }
 
 val <T> ResultWrapper<T>.data: T?
