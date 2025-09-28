@@ -6,18 +6,14 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import com.arkivanov.decompose.defaultComponentContext
 import com.example.rickandmorty.ui.screens.root.RootComponent
-import org.kodein.di.DIAware
-import org.kodein.di.android.closestDI
-import org.kodein.di.instance
+import org.koin.android.ext.android.inject
 
-class MainActivity : ComponentActivity(), DIAware {
-    override val di by closestDI()
-
+class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        val rootComponentFactory: RootComponent.Factory by instance()
+        val rootComponentFactory: RootComponent.Factory by inject()
         val rootComponent = rootComponentFactory(defaultComponentContext())
         setContent {
             App(rootComponent)

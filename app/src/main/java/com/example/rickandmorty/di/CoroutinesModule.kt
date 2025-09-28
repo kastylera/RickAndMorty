@@ -2,15 +2,14 @@ package com.example.rickandmorty.di
 
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
-import org.kodein.di.DI
-import org.kodein.di.bind
-import org.kodein.di.singleton
+import org.koin.core.qualifier.named
+import org.koin.dsl.module
 
-val coroutinesModule = DI.Module("CoroutinesModule") {
-    bind<CoroutineDispatcher>(tag = DEFAULT_DISPATCHER) with singleton { Dispatchers.Default }
-    bind<CoroutineDispatcher>(tag = IO_DISPATCHER) with singleton { Dispatchers.IO }
-    bind<CoroutineDispatcher>(tag = MAIN_DISPATCHER) with singleton { Dispatchers.Main }
-    bind<CoroutineDispatcher>(tag = MAIN_IMMEDIATE_DISPATCHER) with singleton { Dispatchers.Main.immediate }
+val coroutinesModule = module {
+    single<CoroutineDispatcher>(named(DEFAULT_DISPATCHER)) { Dispatchers.Default }
+    single<CoroutineDispatcher>(named(IO_DISPATCHER)) { Dispatchers.IO }
+    single<CoroutineDispatcher>(named(MAIN_DISPATCHER)) { Dispatchers.Main }
+    single<CoroutineDispatcher>(named(MAIN_IMMEDIATE_DISPATCHER)) { Dispatchers.Main.immediate }
 }
 
 const val DEFAULT_DISPATCHER = "DefaultDispatcher"

@@ -9,6 +9,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -64,8 +65,8 @@ dependencies {
     implementation(libs.compose.navigation)
 
     //di
-    implementation(libs.kodein)
-    implementation(libs.kodein.android)
+    implementation(libs.koin)
+    implementation(libs.koin.compose)
 
     //rest
     implementation(libs.retrofit2)
@@ -83,6 +84,11 @@ dependencies {
     implementation(libs.coil)
     implementation(libs.coil.network)
     implementation(libs.icons)
+
+    //room
+    implementation(libs.room)
+    ksp(libs.room.compiler)
+    implementation(libs.room.paging)
 
     //test
     testImplementation(libs.junit)

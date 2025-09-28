@@ -1,8 +1,9 @@
 package com.example.rickandmorty.domain.repositories
 
-import com.example.rickandmorty.domain.models.CharactersData
-import com.example.rickandmorty.domain.utils.ResultWrapper
+import androidx.paging.PagingData
+import com.example.rickandmorty.domain.models.CharacterData
+import kotlinx.coroutines.flow.Flow
 
 interface ApiRepository {
-    suspend fun getCharacters(page: Int): ResultWrapper<CharactersData>
+    fun getCharactersPaging(): Flow<PagingData<CharacterData>>
 }

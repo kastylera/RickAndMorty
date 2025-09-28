@@ -6,15 +6,21 @@ import com.example.rickandmorty.di.dataModule
 import com.example.rickandmorty.di.domainModule
 import com.example.rickandmorty.di.networkModule
 import com.example.rickandmorty.di.uiModule
-import org.kodein.di.DI
-import org.kodein.di.DIAware
+import org.koin.android.ext.koin.androidContext
+import org.koin.core.context.GlobalContext.startKoin
 
-class RickAndMortyApp: Application(), DIAware {
-    override val di by DI.lazy {
-        import(networkModule)
-        import(coroutinesModule)
-        import(dataModule)
-        import(domainModule)
-        import(uiModule)
+class RickAndMortyApp: Application(){
+    override fun onCreate() {
+        super.onCreate()
+        startKoin {
+            androidContext(this@RickAndMortyApp)
+            modules(
+                networkModule,
+                coroutinesModule,
+                dataModule,
+                domainModule,
+                uiModule
+            )
+        }
     }
 }

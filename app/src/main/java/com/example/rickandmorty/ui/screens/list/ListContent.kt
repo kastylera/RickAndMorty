@@ -1,6 +1,5 @@
 package com.example.rickandmorty.ui.screens.list
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,27 +12,27 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import coil3.compose.AsyncImage
 import com.example.rickandmorty.domain.models.CharacterData
+import com.example.rickandmorty.ui.theme.AppTheme
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -44,47 +43,63 @@ fun ListContent(
     val lazyCharacters = component.characters.collectAsLazyPagingItems()
 
     Scaffold(
-        modifier = modifier,
-        topBar = { TopAppBar(title = { Text("All Characters") }) }
+        modifier = modifier, topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = "All Characters",
+                        style = AppTheme.typography.title,
+                        color = AppTheme.colors.text.primary
+                    )
+                }, colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = AppTheme.colors.backgrounds.primary
+                )
+            )
+        }
     ) { paddingValues ->
         when {
             lazyCharacters.loadState.refresh is LoadState.Loading -> {
-                Box(
-                    modifier = Modifier.fillMaxSize().padding(paddingValues),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator()
-                }
+                LoadingBar(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues),
+                )
             }
 
             lazyCharacters.loadState.refresh is LoadState.Error -> {
-                val e = lazyCharacters.loadState.refresh as LoadState.Error
                 Box(
-                    modifier = Modifier.fillMaxSize().padding(paddingValues),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues),
                     contentAlignment = Alignment.Center
                 ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text("Error: ${e.error.localizedMessage}")
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Button(onClick = { lazyCharacters.retry() }) {
-                            Text("Retry")
-                        }
-                    }
+                    ErrorBadge(
+                        errorState = lazyCharacters.loadState.refresh as LoadState.Error,
+                        onRetry = { lazyCharacters.retry() }
+                    )
                 }
             }
 
             lazyCharacters.itemCount == 0 -> {
                 Box(
-                    modifier = Modifier.fillMaxSize().padding(paddingValues),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text("No characters found")
+                    Text(
+                        text = "No characters found",
+                        style = AppTheme.typography.body,
+                        color = AppTheme.colors.text.secondary
+                    )
                 }
             }
 
             else -> {
                 LazyColumn(
-                    modifier = Modifier.fillMaxSize().padding(paddingValues)
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues)
                 ) {
                     items(lazyCharacters.itemCount) { index ->
                         lazyCharacters[index]?.let { character ->
@@ -99,32 +114,19 @@ fun ListContent(
                         when (loadState.append) {
                             is LoadState.Loading -> {
                                 item {
-                                    Box(
+                                    LoadingBar(
                                         modifier = Modifier
                                             .fillMaxWidth()
-                                            .padding(16.dp),
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        CircularProgressIndicator()
-                                    }
+                                            .padding(16.dp)
+                                    )
                                 }
                             }
 
                             is LoadState.Error -> {
                                 item {
-                                    val e = loadState.append as LoadState.Error
-                                    Column(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(16.dp),
-                                        horizontalAlignment = Alignment.CenterHorizontally
-                                    ) {
-                                        Text("Error: ${e.error.localizedMessage}")
-                                        Spacer(modifier = Modifier.height(8.dp))
-                                        Button(onClick = { retry() }) {
-                                            Text("Retry")
-                                        }
-                                    }
+                                    ErrorBadge(
+                                        errorState = loadState.append as LoadState.Error,
+                                        onRetry = { retry() })
                                 }
                             }
 
@@ -140,13 +142,15 @@ fun ListContent(
 }
 
 @Composable
-fun CharacterItem(character: CharacterData, onClick: () -> Unit, modifier: Modifier = Modifier) {
+private fun CharacterItem(character: CharacterData, onClick: () -> Unit, modifier: Modifier = Modifier) {
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .padding(8.dp)
-            .background(Color.White),
-        shape = RoundedCornerShape(16.dp),
+            .padding(8.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = AppTheme.colors.backgrounds.card
+        ),
+        shape = AppTheme.shapes.r16,
         onClick = onClick
     ) {
         Row(
@@ -171,24 +175,62 @@ fun CharacterItem(character: CharacterData, onClick: () -> Unit, modifier: Modif
             ) {
                 Text(
                     text = character.name,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
+                    style = AppTheme.typography.title,
+                    color = AppTheme.colors.text.primary
                 )
                 Text(
                     text = "${character.status} - ${character.species}",
-                    style = MaterialTheme.typography.bodyMedium,
+                    style = AppTheme.typography.body,
                     color = when (character.status) {
-                        "Alive" -> Color(0xFF4CAF50)
-                        "Dead" -> Color(0xFFF44336)
-                        else -> Color.Gray
+                        "Alive" -> AppTheme.colors.badges.alive
+                        "Dead" -> AppTheme.colors.badges.dead
+                        else -> AppTheme.colors.badges.unknown
                     }
                 )
                 Text(
                     text = "Last location: ${character.location.name}",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = Color.Gray
+                    style = AppTheme.typography.caption,
+                    color = AppTheme.colors.text.secondary
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun ErrorBadge(
+    errorState: LoadState.Error,
+    onRetry: () -> Unit,
+) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = "Error: ${errorState.error.localizedMessage}",
+                style = AppTheme.typography.body,
+                color = AppTheme.colors.text.error
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Button(onClick = { onRetry() }) {
+                Text(
+                    "Retry", style = AppTheme.typography.body,
+                    color = AppTheme.colors.text.white
+                )
+            }
+        }
+}
+
+@Composable
+private fun LoadingBar(
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier,
+        contentAlignment = Alignment.Center
+    ) {
+        CircularProgressIndicator(color = AppTheme.colors.buttons.primary)
     }
 }
