@@ -18,7 +18,7 @@
 - Paging 3
 - Decompose / ViewModel
 - Hilt / Koin (DI)
-- Room (опціональне кешування)
+- Room
 
 ## 📂 Структура
 data/ # API, DTO, Room, репозиторії
