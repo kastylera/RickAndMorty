@@ -27,21 +27,37 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.paging.LoadState
+import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import coil3.compose.AsyncImage
 import com.example.rickandmorty.domain.models.CharacterData
+import com.example.rickandmorty.ui.state.NavigationEffect
 import com.example.rickandmorty.ui.theme.AppTheme
 
+@Composable
+fun CharacterListScreen(
+    toDetails: (CharacterData) -> Unit,
+    viewModel: CharacterListViewModel = hiltViewModel()
+) {
+    NavigationEffect(viewModel) {
+        when (it) {
+            is CharacterNavigationState.ToDetails -> toDetails(it.item)
+        }
+    }
+
+    val lazyCharacters = viewModel.charactersPagingData.collectAsLazyPagingItems()
+    CharacterListContent(lazyCharacters, onItemClicked = viewModel::onItemClicked)
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ListContent(
-    component: ListComponent,
+fun CharacterListContent(
+    lazyCharacters: LazyPagingItems<CharacterData>,
+    onItemClicked: (CharacterData) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val lazyCharacters = component.characters.collectAsLazyPagingItems()
-
     Scaffold(
         modifier = modifier, topBar = {
             TopAppBar(
@@ -105,7 +121,7 @@ fun ListContent(
                         lazyCharacters[index]?.let { character ->
                             CharacterItem(
                                 character = character,
-                                onClick = { component.onItemClicked(character) }
+                                onClick = { onItemClicked(character) }
                             )
                         }
                     }
@@ -142,7 +158,11 @@ fun ListContent(
 }
 
 @Composable
-private fun CharacterItem(character: CharacterData, onClick: () -> Unit, modifier: Modifier = Modifier) {
+private fun CharacterItem(
+    character: CharacterData,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -202,25 +222,25 @@ private fun ErrorBadge(
     errorState: LoadState.Error,
     onRetry: () -> Unit,
 ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = "Error: ${errorState.error.localizedMessage}",
+            style = AppTheme.typography.body,
+            color = AppTheme.colors.text.error
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        Button(onClick = { onRetry() }) {
             Text(
-                text = "Error: ${errorState.error.localizedMessage}",
-                style = AppTheme.typography.body,
-                color = AppTheme.colors.text.error
+                "Retry", style = AppTheme.typography.body,
+                color = AppTheme.colors.text.white
             )
-            Spacer(modifier = Modifier.height(8.dp))
-            Button(onClick = { onRetry() }) {
-                Text(
-                    "Retry", style = AppTheme.typography.body,
-                    color = AppTheme.colors.text.white
-                )
-            }
         }
+    }
 }
 
 @Composable

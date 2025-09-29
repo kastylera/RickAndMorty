@@ -1,21 +1,31 @@
 package com.example.rickandmorty.di
 
 import com.example.rickandmorty.data.network.ApiRetrofitService
+import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
-import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
+import javax.inject.Singleton
 
-private const val CONNECTION_TIMEOUT = 35L
-private const val BASE_URL = "https://rickandmortyapi.com"
 
-val networkModule = module {
+@Module
+@InstallIn(SingletonComponent::class)
+object NetworkModule {
 
-    single {
-        OkHttpClient.Builder().apply {
+    private const val CONNECTION_TIMEOUT = 35L
+    private const val BASE_URL = "https://rickandmortyapi.com"
+
+    @Singleton
+    @Provides
+    fun provideHttpClient(): OkHttpClient {
+        return OkHttpClient.Builder().apply {
             val loggingInterceptor = HttpLoggingInterceptor().apply {
                 level = HttpLoggingInterceptor.Level.BODY
             }
@@ -26,17 +36,33 @@ val networkModule = module {
         }.build()
     }
 
-    single { GsonBuilder().create() }
+    @Singleton
+    @Provides
+    fun provideGson(): Gson {
+        return GsonBuilder().create()
+    }
 
-    single { GsonConverterFactory.create(get()) }
+    @Singleton
+    @Provides
+    fun provideConverterFactory(gson: Gson): GsonConverterFactory =
+        GsonConverterFactory.create(gson)
 
-    single {
-        Retrofit.Builder()
+    @Singleton
+    @Provides
+    fun provideRetrofit(
+        okHttpClient: OkHttpClient,
+        converterFactory: GsonConverterFactory,
+    ): Retrofit {
+        return Retrofit.Builder()
             .baseUrl(BASE_URL)
-            .client(get())
-            .addConverterFactory(get<GsonConverterFactory>())
+            .client(okHttpClient)
+            .addConverterFactory(converterFactory)
             .build()
     }
 
-    single { get<Retrofit>().create(ApiRetrofitService::class.java) }
+    @Singleton
+    @Provides
+    fun provideApiRetrofitService(retrofit: Retrofit): ApiRetrofitService =
+        retrofit.create(ApiRetrofitService::class.java)
+
 }

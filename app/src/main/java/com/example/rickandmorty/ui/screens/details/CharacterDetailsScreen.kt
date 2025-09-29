@@ -20,8 +20,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -30,29 +30,36 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import com.arkivanov.decompose.extensions.compose.subscribeAsState
+import com.example.rickandmorty.domain.models.CharacterData
+import com.example.rickandmorty.ui.theme.AppTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DetailContent(
-    component: DetailComponent,
-    modifier: Modifier = Modifier,
+fun CharacterDetailsScreen(
+    character: CharacterData,
+    onBack: () -> Unit
 ) {
-    val state by component.model.subscribeAsState()
-
     Scaffold(
-        modifier = modifier,
+        modifier = Modifier.fillMaxSize(),
         topBar = {
             TopAppBar(
-                title = { Text(text = state.name) },
                 navigationIcon = {
-                    IconButton(onClick = component::onBackPressed) {
+                    IconButton(onClick = onBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
                             contentDescription = "Back"
                         )
                     }
-                }
+                },
+                title = {
+                    Text(
+                        text = character.name,
+                        style = AppTheme.typography.title,
+                        color = AppTheme.colors.text.primary
+                    )
+                }, colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = AppTheme.colors.backgrounds.primary
+                )
             )
         }
     ) { paddingValues ->
@@ -64,8 +71,8 @@ fun DetailContent(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             AsyncImage(
-                model = state.image,
-                contentDescription = state.name,
+                model = character.image,
+                contentDescription = character.name,
                 modifier = Modifier
                     .size(200.dp)
                     .padding(16.dp)
@@ -74,10 +81,10 @@ fun DetailContent(
             )
 
             Text(
-                text = "${state.status} - ${state.species}",
+                text = "${character.status} - ${character.species}",
                 style = MaterialTheme.typography.bodyLarge,
                 fontWeight = FontWeight.Medium,
-                color = when (state.status) {
+                color = when (character.status) {
                     "Alive" -> Color(0xFF4CAF50)
                     "Dead" -> Color(0xFFF44336)
                     else -> Color.Gray
@@ -86,15 +93,14 @@ fun DetailContent(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            InfoRow(label = "Gender", value = state.gender)
-            InfoRow(label = "Origin", value = state.origin.name)
-            InfoRow(label = "Last location", value = state.location.name)
+            InfoRow(label = "Gender", value = character.gender)
+            InfoRow(label = "Origin", value = character.origin.name)
+            InfoRow(label = "Last location", value = character.location.name)
 
             Spacer(modifier = Modifier.height(32.dp))
         }
     }
 }
-
 
 @Composable
 fun InfoRow(label: String, value: String) {

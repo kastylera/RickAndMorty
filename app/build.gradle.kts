@@ -10,6 +10,8 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.hilt)
+    id("kotlin-parcelize")
 }
 
 android {
@@ -65,8 +67,8 @@ dependencies {
     implementation(libs.compose.navigation)
 
     //di
-    implementation(libs.koin)
-    implementation(libs.koin.compose)
+    implementation(libs.bundles.hilt)
+    ksp(libs.hilt.compiler)
 
     //rest
     implementation(libs.retrofit2)
@@ -74,10 +76,6 @@ dependencies {
     implementation(libs.gson)
     implementation(libs.okhttp3.logging.interceptor)
 
-    //decompose
-    implementation(libs.decompose.decompose)
-    implementation(libs.decompose.extensionsCompose)
-    implementation(libs.decompose.lifecycle)
     //ui
     implementation(libs.paging)
     implementation(libs.paging.compose)
@@ -86,9 +84,8 @@ dependencies {
     implementation(libs.icons)
 
     //room
-    implementation(libs.room)
+    implementation(libs.bundles.room)
     ksp(libs.room.compiler)
-    implementation(libs.room.paging)
 
     //test
     testImplementation(libs.junit)

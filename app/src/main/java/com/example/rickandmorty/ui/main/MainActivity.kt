@@ -4,19 +4,20 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import com.arkivanov.decompose.defaultComponentContext
-import com.example.rickandmorty.ui.screens.root.RootComponent
-import org.koin.android.ext.android.inject
+import com.example.rickandmorty.ui.state.rememberAppState
+import com.example.rickandmorty.ui.theme.RickAndMortyTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-
-        val rootComponentFactory: RootComponent.Factory by inject()
-        val rootComponent = rootComponentFactory(defaultComponentContext())
         setContent {
-            App(rootComponent)
+            val appState = rememberAppState()
+            RickAndMortyTheme {
+                App(appState)
+            }
         }
     }
 }

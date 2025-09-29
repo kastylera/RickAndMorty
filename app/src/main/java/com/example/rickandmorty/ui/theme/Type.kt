@@ -144,9 +144,4 @@ private val dText14 = TextStyle(
     color = lightRickAndMortyColorScheme.text.primary,
 )
 
-fun TextStyle.bold() = this.copy(fontWeight = FontWeight.Bold)
-fun TextStyle.regular() = this.copy(fontWeight = FontWeight.Normal)
-fun TextStyle.semiBold() = this.copy(fontWeight = FontWeight.SemiBold)
-fun TextStyle.medium() = this.copy(fontWeight = FontWeight.Medium)
-
 internal fun LocalTypography(color: Color) = staticCompositionLocalOf { rickAndMortyTypography(color) }

@@ -1,10 +1,11 @@
 package com.example.rickandmorty.domain.models
 
+import android.os.Parcelable
 import com.example.rickandmorty.core.DEFAULT_ID
 import com.example.rickandmorty.core.EMPTY_STRING
-import kotlinx.serialization.Serializable
+import kotlinx.parcelize.Parcelize
 
-@Serializable
+@Parcelize
 data class CharacterData(
     val id: Int,
     val name: String,
@@ -18,7 +19,7 @@ data class CharacterData(
     val episode: List<String>,
     val url: String,
     val created: String
-) {
+): Parcelable {
     companion object {
         val DEFAULT = CharacterData(
             id = DEFAULT_ID,
@@ -37,11 +38,11 @@ data class CharacterData(
     }
 }
 
-@Serializable
+@Parcelize
 data class Origin(
     val name: String,
     val url: String
-) {
+): Parcelable {
     companion object {
         val DEFAULT = Origin(
             name = EMPTY_STRING,
@@ -50,11 +51,11 @@ data class Origin(
     }
 }
 
-@Serializable
+@Parcelize
 data class Location(
     val name: String,
     val url: String
-) {
+): Parcelable {
     companion object {
         val DEFAULT = Location(
             name = EMPTY_STRING,
